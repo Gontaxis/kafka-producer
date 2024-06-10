@@ -1,6 +1,9 @@
 from confluent_kafka import Producer
 import json
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+
 
 # Kafka configuration
 conf = {
@@ -24,6 +27,20 @@ def delivery_report(err, msg):
 
 # Create Flask app
 app = Flask(__name__)
+CORS(app)
+
+@app.route('/', methods=['OPTIONS'])
+def handle_options():
+    response = app.response_class(
+        status=200,
+        headers={
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '86400',
+        }
+    )
+    return response
 
 @app.route('/produce', methods=['POST'])
 def produce_message():
